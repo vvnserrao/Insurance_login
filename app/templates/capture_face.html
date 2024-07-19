@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }} - Capture Face</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Capture Face</h1>
+    <div id="camera"></div>
+    <button onclick="captureImage()">Capture Image</button>
+    
+    <!-- JavaScript function for webcam -->
+    <script>
+        function captureImage() {
+            Webcam.snap(function(data_uri) {
+                // Handle captured image data (send to server, display, etc.)
+                console.log(data_uri); // Example: Log image data URI
+
+                // Send image data to server (Flask route '/capture_face')
+                fetch('/capture_face', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image_data: data_uri }),
+                })
+                .then(response => response.text())
+                .then(message => {
+                    alert(message); // Example: Display success message
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

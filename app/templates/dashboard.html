@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }} - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Include Webcam.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.min.js"></script>
+    <style>
+        #camera {
+            width: 320px;
+            height: 240px;
+            border: 1px solid black;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Your Dashboard</h1>
+    <p>Here are your options:</p>
+    <button onclick="openWebcam()">Capture Face</button>
+    <button onclick="location.href='{{ url_for('add_details') }}'">Add Details</button>
+
+    <!-- Div to display webcam -->
+    <div id="camera"></div>
+
+    <!-- JavaScript function for webcam -->
+    <script>
+        function openWebcam() {
+            var cameraElement = document.getElementById('camera');
+            cameraElement.innerHTML = ''; // Clear any previous content
+            Webcam.set({
+                width: 320,
+                height: 240,
+                image_format: 'jpeg',
+                jpeg_quality: 90
+            });
+            Webcam.attach('#camera'); // Attach webcam to div with id 'camera'
+
+            // Add a button to capture image
+            var captureButton = document.createElement('button');
+            captureButton.textContent = 'Capture Image';
+            captureButton.onclick = captureImage;
+            cameraElement.appendChild(captureButton);
+        }
+
+        function captureImage() {
+            Webcam.snap(function(data_uri) {
+                // Handle captured image data (send to server, display, etc.)
+                console.log(data_uri); // Example: Log image data URI
+
+                // Example: Send image data to server using fetch
+                fetch('/capture_face', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image_data: data_uri }),
+                })
+                .then(response => response.text())
+                .then(message => {
+                    alert(message); // Example: Display success message
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
